@@ -3,13 +3,23 @@
   <div>
     <button @click="startScreen">录制</button>
     <button @click="stopScreen">停止</button>
-    <video id="screenView" width="960" height="540" autoplay muted loop></video>
+    <button @click="downloadStream">下载</button>
+    <video
+      id="screenView"
+      src="../../assets/base.mp4"
+      width="960"
+      height="540"
+      autoplay
+      muted
+      loop
+    ></video>
   </div>
 </template>
 
 <script setup>
-const video = document.getElementById('video');
+import { ref } from 'vue';
 
+// const screenView = document.getElementById('screenView');
 const data = [];
 let mediaRecorder = null;
 const startScreen = () => {
@@ -46,7 +56,10 @@ const stopScreen = () => {
   window.screenView.controls = true;
   window.screenView.muted = false;
   window.screenView.play();
-  // download blob
+};
+
+const downloadStream = () => {
+  const blob = new Blob(data, { type: 'video/webm' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
   a.download = 'test.webm';
