@@ -21,17 +21,20 @@ const startCamera = () => {
     })
     .then((stream) => {
       window.cameraView.srcObject = stream;
-      //   return window.cameraView;
+    })
+    .then(() => {
+      setTimeout(() => {
+        window.cameraView.requestPictureInPicture();
+      }, 500);
     });
-  setTimeout(() => {
-    window.cameraView.requestPictureInPicture();
-  }, 1000);
+
   isCameraOn = true;
 };
 
 const stopCamera = () => {
   const tracks = window.cameraView.srcObject.getTracks(); // [audioTrack, videoTrack]
   tracks.forEach((track) => track.stop());
+  document.exitPictureInPicture();
   window.cameraView.srcObject = null;
   isCameraOn = false;
 };
