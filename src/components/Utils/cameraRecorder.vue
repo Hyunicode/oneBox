@@ -1,11 +1,26 @@
 <template>
-  <div>
-    <button @click="toggleCamera">摄像头</button>
-    <video id="cameraView" width="240" height="180" autoplay muted style="opacity: 0"></video>
+  <div id="root">
+    <!-- <button @click="toggleCamera">摄像头</button> -->
+    <!-- <span>摄像头</span> -->
+
+    <video id="cameraView" width="240" height="240" autoplay muted></video>
+    <el-switch
+      v-model="value"
+      style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
+      size="large"
+      inline-prompt
+      :active-icon="Check"
+      :inactive-icon="Close"
+      @change="toggleCamera"
+    />
   </div>
 </template>
 
 <script setup>
+import { ref } from 'vue';
+import { Check, Close } from '@element-plus/icons-vue';
+
+const value = ref(false);
 let isCameraOn = false;
 const startCamera = () => {
   navigator.mediaDevices
@@ -47,3 +62,13 @@ const toggleCamera = () => {
   }
 };
 </script>
+
+<style>
+
+#cameraView {
+  opacity: 0;
+  display: hidden;
+  width: 0px;
+  height: 0px;
+}
+</style>

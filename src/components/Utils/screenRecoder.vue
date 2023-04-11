@@ -1,25 +1,45 @@
 <!-- eslint-disable no-console -->
 <template>
   <div>
-    <button @click="startScreen">录制</button>
-    <button @click="stopScreen">停止</button>
-    <button @click="downloadStream">下载</button>
-    <video
-      id="screenView"
-      src="../../assets/base.mp4"
-      width="960"
-      height="540"
-      autoplay
-      muted
-      loop
-    ></video>
+    <div id="root">
+      <video
+        id="screenView"
+        src="../../assets/base.mp4"
+        autoplay="autoplay"
+        controls="controls"
+        muted="muted"
+        loop
+      ></video>
+      <!-- <button @click="startScreen">录制</button> -->
+      <el-button type="warning" @click="startScreen" round size="small">
+        <span>开始录制</span>
+      </el-button>
+      <!-- <button @click="stopScreen">停止</button> -->
+      <el-button type="warning" @click="stopScreen" round size="small">
+        <span>停止录制</span>
+      </el-button>
+      <!-- <button @click="downloadStream">下载</button> -->
+      <el-button type="warning" @click="downloadStream" round size="small">
+        <span>下载视频</span>
+      </el-button>
+      <cameraRecorder />
+      <!-- <audioTransfer /> -->
+    </div>
   </div>
 </template>
 
 <script setup>
 import { ref } from 'vue';
+import cameraRecorder from './cameraRecorder.vue';
+// import audioTransfer from './audioTransfer.vue';
+// import { Delete, Edit, Search, Share, Upload } from '@element-plus/icons-vue';
 
-// const screenView = document.getElementById('screenView');
+window.onload = () => {
+  const basevideo = document.getElementById('screenView');
+  if (!basevideo.play()) {
+    basevideo.play();
+  }
+};
 const data = [];
 let mediaRecorder = null;
 const startScreen = () => {
@@ -62,8 +82,23 @@ const downloadStream = () => {
   const blob = new Blob(data, { type: 'video/webm' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = 'test.webm';
+  a.download = `${new Date().getTime()}.webm`;
   a.click();
 };
 </script>
-<style lang="scss" scoped></style>
+
+<style scoped>
+#root {
+  display: inline-block;
+  margin: 20px;
+}
+#screenView {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 4px dashed #374685;
+  width: 960px;
+  height: 540px;
+}
+</style>
