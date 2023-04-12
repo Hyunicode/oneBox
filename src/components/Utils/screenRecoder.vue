@@ -1,35 +1,36 @@
 <!-- eslint-disable no-console -->
 <template>
-  <div>
-    <div id="root">
-      <video
-        id="screenView"
-        src="../../assets/base.mp4"
-        autoplay="autoplay"
-        controls="controls"
-        muted="muted"
-        loop
-      ></video>
-      <!-- <button @click="startScreen">录制</button> -->
-      <el-button type="warning" @click="startScreen" round size="small">
-        <span>开始录制</span>
-      </el-button>
-      <!-- <button @click="stopScreen">停止</button> -->
-      <el-button type="warning" @click="stopScreen" round size="small">
-        <span>停止录制</span>
-      </el-button>
-      <!-- <button @click="downloadStream">下载</button> -->
-      <el-button type="warning" @click="downloadStream" round size="small">
-        <span>下载视频</span>
-      </el-button>
-      <cameraRecorder />
-      <!-- <audioTransfer /> -->
-    </div>
+  <div id="root">
+    <video
+      id="screenView"
+      src="../../assets/base.mp4"
+      autoplay="autoplay"
+      controls="controls"
+      muted="muted"
+      loop
+    ></video>
+    <!-- <button @click="startScreen">录制</button> -->
+    <el-button type="warning" @click="startScreen" round size="small">
+      <span>开始录制</span>
+    </el-button>
+    <!-- <button @click="stopScreen">停止</button> -->
+    <el-button type="warning" @click="stopScreen" round size="small">
+      <span>停止录制</span>
+    </el-button>
+    <!-- <button @click="downloadStream">下载</button> -->
+    <el-button type="warning" @click="downloadStream" round size="small">
+      <span>下载视频</span>
+    </el-button>
+    <el-button type="warning" @click="jumpTp()" round size="small">
+      <span>跳转</span>
+    </el-button>
+    <cameraRecorder />
+    <!-- <audioTransfer /> -->
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, inject } from 'vue';
 import cameraRecorder from './cameraRecorder.vue';
 // import audioTransfer from './audioTransfer.vue';
 // import { Delete, Edit, Search, Share, Upload } from '@element-plus/icons-vue';
@@ -62,7 +63,7 @@ const startScreen = () => {
           data.push(event.data); // 存储媒体数据
         }
       };
-      mediaRecorder.start(1000); // 开始录制，每隔1秒触发一次ondataavailable事件
+      mediaRecorder.start(10);
     });
 };
 
@@ -85,6 +86,13 @@ const downloadStream = () => {
   a.download = `${new Date().getTime()}.webm`;
   a.click();
 };
+
+// inject('screenView', ref(window.screenView));
+// inject('jumpTime', jumpTime);
+
+const jumpTp = (time_) => {
+  window.screenView.currentTime = time_ || 10;
+};
 </script>
 
 <style scoped>
@@ -98,7 +106,7 @@ const downloadStream = () => {
   justify-content: center;
   align-items: center;
   border: 4px dashed #374685;
-  width: 960px;
-  height: 540px;
+  width: 1200px;
+  height: 675px;
 }
 </style>

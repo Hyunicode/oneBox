@@ -1,34 +1,55 @@
+<!-- eslint-disable no-console -->
 <template>
-  <div id="root">
-    <el-switch
-      v-model="value"
-      style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
-      size="large"
-      inline-prompt
-      :active-icon="Check"
-      :inactive-icon="Close"
-      @change="toggleAudio"
-    />
-    <el-tree-select
-      v-model="langu"
-      :data="options"
-      :props="props"
-      filterable
-      clearable
-      :show-all-levels="false"
-      placeholder="voice language"
-      style="width: 150px"
-      @change="changeLangu"
-    />
-    <span>{{ langu }}</span>
+  <div id="ATroot">
+    <div>
+      Audio Transfer
+      <el-switch
+        v-model="value"
+        style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
+        size="large"
+        inline-prompt
+        :active-icon="Check"
+        :inactive-icon="Close"
+        @change="toggleAudio"
+      />
+      Language:
+      <el-tree-select
+        v-model="langu"
+        :data="options"
+        :props="props"
+        filterable
+        clearable
+        :show-all-levels="false"
+        placeholder="voice language"
+        style="width: 150px"
+        @change="changeLangu"
+      />
+    </div>
+    <br />
+    <div class="audioTransfer" v-for="(_, index) in audioTime" :key="index">
+      <!-- <span class="audioTime">{{ audioTime[index] }}</span> -->
+      <div>
+        <el-button text size="small">{{ audioTime[index] }}</el-button>
+      </div>
+      <div>
+        <el-link type="info" class="audioText">{{ audioText[index] }}</el-link>
+      </div>
+    </div>
   </div>
 </template>
 <script setup>
-import { ref } from 'vue';
-import { Check, Close } from '@element-plus/icons-vue';
+import { ref, inject } from 'vue';
+import { Check, Close, Position } from '@element-plus/icons-vue';
 
+// const videoEl = inject('videoEl');
 const value = ref(false);
-const text1111 = ref('text');
+const audioTime = ref(['00:12', '00:42', '02:56', '59:42']);
+const audioText = ref([
+  '虞书欣要求粉丝不要再催工作人员，说他们平时工作很努力，对自己也很好',
+  '很多人会认为像他这样靠粉丝为生的人发这么一篇小作文太冒昧了',
+  '事实上，艺人和工作人员几乎一天24小时都在一起，粉丝之间不可能有隔阂',
+  '如果艺人本人对工作人员没有自己的意见，就无法决定这样的事情',
+]);
 const langu = ref('cmn-Hans-CN');
 const props = {
   expandTrigger: 'hover',
@@ -177,6 +198,8 @@ const options = [
     ],
   },
 ];
+
+const now = new Date().getTime();
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 if (!SpeechRecognition) {
   // eslint-disable-next-line no-alert
@@ -186,20 +209,36 @@ const recognition = new SpeechRecognition();
 recognition.interimResults = false;
 recognition.lang = langu.value || 'cmn-Hans-CN';
 recognition.onresult = (e) => {
+  // eslint-disable-next-line no-console
+  // console.log(e.results);
   const transcript = Array.from(e.results)
     .map((result) => result[0])
     .map((result) => result.transcript)
     .join('');
-  console.log(transcript);
+  const nowTime = (new Date().getTime() - now) / 1000;
+  // transfer to mm:ss
+  const nowmin = Math.floor(nowTime / 60);
+  const nowsec = Math.floor(nowTime % 60);
+  // eslint-disable-next-line no-console
+  console.log(nowTime, transcript);
+  audioText.value.push(transcript);
+  audioTime.value.push(
+    `${nowmin < 10 ? `0${nowmin}` : nowmin}:${nowsec < 10 ? `0${nowsec}` : nowsec}`,
+  );
 };
 recognition.onstart = () => {
-  console.log('Speech recognition service has started');
+  // eslint-disable-next-line no-console
+  // console.log('Speech recognition service has started');
 };
 recognition.onend = () => {
-  console.log('Speech recognition service disconnected');
-  recognition.start();
+  // eslint-disable-next-line no-console
+  // console.log('Speech recognition service disconnected');
+  if (value.value) {
+    recognition.start();
+  }
 };
 recognition.onerror = (e) => {
+  // eslint-disable-next-line no-console
   console.error(e);
 };
 const start = () => {
@@ -217,13 +256,19 @@ const toggleAudio = () => {
 };
 const changeLangu = () => {
   recognition.lang = langu.value;
-  console.log(recognition.lang);
+  // eslint-disable-next-line no-console
+  // console.log(recognition.lang);
 };
 </script>
 
 <style>
-#root {
-  display: inline-block;
-  margin: 20px;
+#ATroot {
+  width: 100%;
+}
+
+.audioTransfer {
+  display: grid;
+  grid-template-columns: 1fr 10fr;
+  /* grid-template-rows: 1fr 1fr; */
 }
 </style>
